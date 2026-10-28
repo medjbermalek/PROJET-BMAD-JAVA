@@ -55,7 +55,11 @@ function App() {
 
   function updateField(field: keyof RequestFields, value: string) {
     setFields((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    setFieldErrors((current) => {
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
     setFormError('');
   }
 

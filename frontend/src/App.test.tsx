@@ -57,6 +57,21 @@ describe('callback request journey', () => {
     });
   });
 
+  it('clears the error summary once previously invalid fields are corrected', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    fireEvent.submit(screen.getByLabelText(/Prénom/).closest('form')!);
+    await waitFor(() => {
+      expect(screen.getByText(/corrections sont nécessaires/i)).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText(/Prénom/), 'Camille');
+    await user.type(screen.getByLabelText(/Nom/), 'Martin');
+    await user.type(screen.getByLabelText(/Téléphone fictif/), '0612345678');
+
+    expect(screen.queryByText(/corrections sont nécessaires/i)).not.toBeInTheDocument();
+  });
+
   it('rejects phone numbers outside the seven-to-fifteen digit range', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch');
     const user = userEvent.setup();
